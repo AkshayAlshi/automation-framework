@@ -1,0 +1,24 @@
+
+# Maven
+target/
+logs/
+reports/
+*.log
+
+# IntelliJ / Eclipse / VSCode
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# Config
+config.properties
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Node (if dashboard added)
+node_modules/
+frontend/build/

@@ -46,10 +46,10 @@ pipeline {
         failure {
             mail bcc: '',
                  body: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck console output at ${env.BUILD_URL}",
-                 from: 'jenkins@example.com',
-                 replyTo: 'qa@example.com',
+                 from: 'akshayalshi@gmail.com',
+                 replyTo: 'akshayalshi@gmail.com',
                  subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 to: 'qa-team@example.com'
+                 to: 'alshiakshay55@gmail.com'
         }
     }
 }

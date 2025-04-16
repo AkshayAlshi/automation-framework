@@ -2,22 +2,16 @@ pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME'     // This should match your Maven tool name in Jenkins
-        jdk 'JAVA_HOME'        // This should match your JDK tool name in Jenkins
+        maven 'MAVEN_HOME'
+        jdk 'JAVA_HOME'
     }
 
     environment {
         REPORT_DIR = "reports"
-        EMAIL_CLASS = "utils.EmailSender"
+        EMAIL_CLASS = "EmailSender"  // Adjusted as per your clarification
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/AkshayAlshi/automation-framework.git'
-            }
-        }
-
         stage('Build & Test') {
             steps {
                 sh 'mvn clean test'

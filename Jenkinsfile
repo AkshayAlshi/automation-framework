@@ -1,39 +1,53 @@
-package tests;
+pipeline {
+    agent any
 
-import base.BaseTest;
-import config.Config;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import pages.LoginPage;
+    tools {
+        maven 'MAVEN_HOME'      // Ensure this matches your Jenkins tool name
+        jdk 'JAVA_HOME'         // Ensure this matches your Jenkins JDK name
+    }
 
-public class LoginTest extends BaseTest {
+    environment {
+        REPORT_DIR = "reports"
+        EMAIL_CLASS = "utils.EmailSender"
+    }
 
-    private static final Logger log = LogManager.getLogger(LoginTest.class);
-
-    @Test
-    public void validLogin() {
-        log.info("Starting validLogin test...");
-
-        String user = Config.get("username");
-        String pass = Config.get("password");
-
-        log.info("Navigating to URL: {}", Config.get("base.url"));
-        driver.get(Config.get("base.url"));
-
-        log.info("Attempting login with username: {}", user);
-        new LoginPage(driver).login(user, pass);
-
-        log.info("Verifying login success by checking URL contains 'UserInterfaces'");
-        boolean isLoggedIn = driver.getCurrentUrl().contains("UserInterfaces");
-
-        if (isLoggedIn) {
-            log.info("✅ Login test passed.");
-        } else {
-            log.error("❌ Login test failed. URL after login: {}", driver.getCurrentUrl());
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/AkshayAlshi/automation-framework.git'
+            }
         }
 
-        Assert.assertTrue(isLoggedIn, "User is not redirected to expected dashboard.");
+        stage('Build & Test') {
+            steps {
+                bat 'mvn clean compile test'
+            }
+        }
+
+        stage('Archive Reports') {
+            steps {
+                archiveArtifacts artifacts: "${REPORT_DIR}/extent-report.html", allowEmptyArchive: true
+            }
+        }
+
+        stage('Send Email') {
+            steps {
+                bat "java -cp target/classes;target/dependency/* ${EMAIL_CLASS}"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline completed.'
+        }
+        failure {
+            mail bcc: '',
+                 body: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck: ${env.BUILD_URL}",
+                 from: 'akshayalshi@gmail.com',
+                 replyTo: 'akshayalshi@gmail.com',
+                 subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 to: 'alshiakshay55@gmail.com'
+        }
     }
 }

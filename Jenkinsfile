@@ -8,13 +8,13 @@ pipeline {
 
     environment {
         REPORT_DIR = "reports"
-        EMAIL_CLASS = "EmailSender"
+        EMAIL_CLASS = "utils.EmailSender"
     }
 
     stages {
         stage('Build & Test') {
             steps {
-                bat 'mvn clean test'
+                bat 'mvn clean compile test'
             }
         }
 
@@ -27,7 +27,7 @@ pipeline {
         stage('Send Email') {
             steps {
                 script {
-                    bat "java -cp target/classes;target/dependency/* %EMAIL_CLASS%"
+                    bat "java -cp target/classes;target/dependency/* ${EMAIL_CLASS}"
                 }
             }
         }

@@ -29,7 +29,7 @@
             <version>5.1.0</version>
         </dependency>
 
-        <!-- Apache POI for Excel -->
+        <!-- Apache POI -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
@@ -85,18 +85,8 @@
     </dependencies>
 
     <build>
-        <!-- Added resources section -->
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
-
         <plugins>
-            <!-- Run TestNG tests via Maven -->
+            <!-- TestNG execution -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -108,7 +98,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Ensure UTF-8 encoding and Java 17 compatibility -->
+            <!-- Compiler and Encoding -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -120,6 +110,7 @@
                 </configuration>
             </plugin>
 
+            <!-- Resources encoding -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>

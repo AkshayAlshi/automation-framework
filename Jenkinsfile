@@ -2,22 +2,28 @@ pipeline {
     agent any
 
     tools {
+<<<<<<< HEAD
 		maven 'MAVEN_HOME'  // Make sure this tool is configured in Jenkins global tools
         jdk 'JAVA_HOME'         // Ensure this JDK is added in Jenkins global tools
 		  }
 		  
+=======
+        maven 'MAVEN_HOME'  // Make sure this tool is configured in Jenkins global tools
+        jdk 'JAVA_HOME'         // Ensure this JDK is added in Jenkins global tools
+    }
+>>>>>>> 33810879a251568799cc4ba185329e8b7315d52d
 
     environment {
         REPORT_DIR = "reports"
         EMAIL_CLASS = "utils.EmailSender"
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/AkshayAlshi/automation-framework.git'
-            }
-        }
+   stage('Checkout') {
+    steps {
+        git branch: 'main', url: 'https://github.com/AkshayAlshi/automation-framework.git'
+    }
+}
+
 
         stage('Build & Test') {
             steps {

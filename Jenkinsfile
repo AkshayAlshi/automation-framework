@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         maven 'Maven_3.8.6'  // Make sure this tool is configured in Jenkins global tools
-        jdk 'JDK_17'         // Or your installed JDK version
+        jdk 'JDK_17'         // Ensure this JDK is added in Jenkins global tools
     }
 
     environment {
@@ -20,7 +20,7 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                sh 'mvn clean test'
+                bat 'mvn clean test'
             }
         }
 
@@ -33,7 +33,7 @@ pipeline {
         stage('Send Email') {
             steps {
                 script {
-                    sh "java -cp target/classes:target/dependency/* ${EMAIL_CLASS}"
+                    bat "java -cp target\\classes;target\\dependency\\* %EMAIL_CLASS%"
                 }
             }
         }

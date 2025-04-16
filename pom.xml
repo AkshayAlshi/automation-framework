@@ -15,7 +15,7 @@
             <version>4.20.0</version>
         </dependency>
 
-        <!-- TestNG (used in both main and test code) -->
+        <!-- TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -85,6 +85,16 @@
     </dependencies>
 
     <build>
+        <!-- Added resources section -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <!-- Run TestNG tests via Maven -->
             <plugin>

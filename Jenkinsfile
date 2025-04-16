@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME'  // Make sure this tool is configured in Jenkins global tools
-        jdk 'JAVA_HOME'         // Ensure this JDK is added in Jenkins global tools
+        maven 'MAVEN_HOME'      // Make sure this is configured in Jenkins > Global Tool Configuration
+        jdk 'JAVA_HOME'         // Same here
     }
 
     environment {
@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/your-repo/test-automation.git'
+                git url: 'https://github.com/AkshayAlshi/automation-framework.git' // ✅ Updated
             }
         }
 

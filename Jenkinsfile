@@ -8,10 +8,15 @@ pipeline {
 
     environment {
         REPORT_DIR = "reports"
-        EMAIL_CLASS = "utils.EmailSender"
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/AkshayAlshi/automation-framework.git'
+            }
+        }
+
         stage('Build & Test') {
             steps {
                 bat 'mvn clean compile test'
@@ -27,7 +32,8 @@ pipeline {
         stage('Send Email') {
             steps {
                 script {
-                    bat "java -cp target/classes;target/dependency/* ${EMAIL_CLASS}"
+                    bat 'mvn dependency:copy-dependencies'
+                    bat 'java -cp target\\automation-framework-0.0.1-SNAPSHOT-jar-with-dependencies.jar utils.EmailSender'
                 }
             }
         }
@@ -37,6 +43,7 @@ pipeline {
         always {
             echo 'Pipeline completed.'
         }
+
         failure {
             mail bcc: '',
                  body: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck console output at ${env.BUILD_URL}",

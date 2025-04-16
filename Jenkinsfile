@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME'      // Ensure this matches your Jenkins tool name
-        jdk 'JAVA_HOME'         // Ensure this matches your Jenkins JDK name
+        maven 'MAVEN_HOME'  // Make sure this tool is configured in Jenkins global tools
+        jdk 'JAVA_HOME'         // Ensure this JDK is added in Jenkins global tools
     }
 
     environment {
@@ -14,25 +14,27 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/AkshayAlshi/automation-framework.git'
+                git url: 'https://github.com/your-repo/test-automation.git'
             }
         }
 
         stage('Build & Test') {
             steps {
-                bat 'mvn clean compile test'
+                bat 'mvn clean test'
             }
         }
 
         stage('Archive Reports') {
             steps {
-                archiveArtifacts artifacts: "${REPORT_DIR}/extent-report.html", allowEmptyArchive: true
+                archiveArtifacts artifacts: "${REPORT_DIR}/*.html", allowEmptyArchive: true
             }
         }
 
         stage('Send Email') {
             steps {
-                bat "java -cp target/classes;target/dependency/* ${EMAIL_CLASS}"
+                script {
+                    bat "java -cp target\\classes;target\\dependency\\* %EMAIL_CLASS%"
+                }
             }
         }
     }
@@ -43,10 +45,10 @@ pipeline {
         }
         failure {
             mail bcc: '',
-                 body: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck: ${env.BUILD_URL}",
+                 body: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck console output at ${env.BUILD_URL}",
                  from: 'akshayalshi@gmail.com',
                  replyTo: 'akshayalshi@gmail.com',
-                 subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  to: 'alshiakshay55@gmail.com'
         }
     }

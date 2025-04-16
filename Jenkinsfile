@@ -1,4 +1,4 @@
-pipeline {
+﻿pipeline {
     agent any
 
     tools {
@@ -48,7 +48,7 @@ pipeline {
                  body: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck console output at ${env.BUILD_URL}",
                  from: 'akshayalshi@gmail.com',
                  replyTo: 'akshayalshi@gmail.com',
-                 subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  to: 'alshiakshay55@gmail.com'
         }
     }

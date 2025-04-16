@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     tools {
         maven 'MAVEN_HOME'
         jdk 'JAVA_HOME'
@@ -8,12 +12,13 @@ pipeline {
 
     environment {
         REPORT_DIR = "reports"
+        EMAIL_CLASS = "utils.EmailSender"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/AkshayAlshi/automation-framework.git'
+                git branch: 'main', url: 'https://github.com/AkshayAlshi/automation-framework.git'
             }
         }
 
@@ -25,15 +30,14 @@ pipeline {
 
         stage('Archive Reports') {
             steps {
-                archiveArtifacts artifacts: "${REPORT_DIR}/*.html", allowEmptyArchive: true
+                archiveArtifacts artifacts: "${REPORT_DIR}/extent-report.html", allowEmptyArchive: true
             }
         }
 
         stage('Send Email') {
             steps {
                 script {
-                    bat 'mvn dependency:copy-dependencies'
-                    bat 'java -cp target\\automation-framework-0.0.1-SNAPSHOT-jar-with-dependencies.jar utils.EmailSender'
+                    bat "java -cp target/classes;target/dependency/* ${EMAIL_CLASS}"
                 }
             }
         }
@@ -43,7 +47,6 @@ pipeline {
         always {
             echo 'Pipeline completed.'
         }
-
         failure {
             mail bcc: '',
                  body: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck console output at ${env.BUILD_URL}",

@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven_3.8.6'  // Make sure this tool is configured in Jenkins global tools
-        jdk 'JDK_17'         // Ensure this JDK is added in Jenkins global tools
-    }
+		maven 'MAVEN_HOME'  // Make sure this tool is configured in Jenkins global tools
+        jdk 'JAVA_HOME'         // Ensure this JDK is added in Jenkins global tools
+		  }
+		  
 
     environment {
         REPORT_DIR = "reports"
@@ -14,13 +15,13 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/your-repo/test-automation.git'
+                git url: 'https://github.com/AkshayAlshi/automation-framework.git'
             }
         }
 
         stage('Build & Test') {
             steps {
-                bat 'mvn clean test'
+                sh 'mvn clean test'
             }
         }
 
@@ -33,7 +34,7 @@ pipeline {
         stage('Send Email') {
             steps {
                 script {
-                    bat "java -cp target\\classes;target\\dependency\\* %EMAIL_CLASS%"
+                    sh "java -cp target/classes:target/dependency/* ${EMAIL_CLASS}"
                 }
             }
         }

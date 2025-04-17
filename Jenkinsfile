@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME'  // Make sure this name matches Global Tool Configuration in Jenkins
-        jdk 'JAVA_HOME'     // Same here
+        maven 'MAVEN_HOME'  // Ensure these match your Jenkins global tool config
+        jdk 'JAVA_HOME'
     }
 
     environment {
@@ -32,8 +32,14 @@ pipeline {
 
         stage('Send Email') {
             steps {
-                script {
-                    bat "java -cp target\\classes;target\\dependency\\* %EMAIL_CLASS%"
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'smtp-creds',
+                        usernameVariable: 'SMTP_USER',
+                        passwordVariable: 'SMTP_PASS'
+                    )
+                ]) {
+                    bat "java -Demail.username=%SMTP_USER% -Demail.password=%SMTP_PASS% -cp target\\classes;target\\dependency\\* %EMAIL_CLASS%"
                 }
             }
         }

@@ -7,58 +7,64 @@
     <artifactId>automation-framework</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <dependencies>
-        <!-- Selenium WebDriver -->
+        <!-- ✅ Selenium WebDriver -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>4.20.0</version>
         </dependency>
 
-        <!-- TestNG -->
+        <!-- ✅ TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>7.10.1</version>
-            
+           
         </dependency>
 
-        <!-- ExtentReports -->
+        <!-- ✅ ExtentReports -->
         <dependency>
             <groupId>com.aventstack</groupId>
             <artifactId>extentreports</artifactId>
             <version>5.1.0</version>
         </dependency>
 
-        <!-- Apache POI for Excel -->
+        <!-- ✅ Apache POI for Excel support -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.4</version>
         </dependency>
 
-        <!-- PostgreSQL JDBC -->
+        <!-- ✅ PostgreSQL JDBC -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.6.0</version>
         </dependency>
 
-        <!-- Jakarta Mail (JavaMail) -->
+        <!-- ✅ Jakarta Mail (JavaMail successor) -->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
             <version>2.0.1</version>
         </dependency>
 
-        <!-- REST Assured -->
+        <!-- ✅ REST Assured (if you're doing API testing) -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>5.4.0</version>
         </dependency>
 
-        <!-- Log4j2 -->
+        <!-- ✅ Log4j2 -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -70,14 +76,14 @@
             <version>2.22.1</version>
         </dependency>
 
-        <!-- WebDriverManager -->
+        <!-- ✅ WebDriverManager -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>5.7.0</version>
         </dependency>
 
-        <!-- Apache Commons IO -->
+        <!-- ✅ Commons IO -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -87,7 +93,19 @@
 
     <build>
         <plugins>
-            <!-- Surefire Plugin to run TestNG -->
+            <!-- 🔧 Compiler Plugin for Java 17 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- ✅ Surefire Plugin to run TestNG -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -100,19 +118,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Compiler Plugin for Java 17 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-
-            <!-- Resource Plugin to enforce UTF-8 -->
+            <!-- ✅ Resource plugin for encoding -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -122,7 +128,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Dependency Plugin to copy all required JARs -->
+            <!-- ✅ Dependency plugin to copy all required JARs for Jenkins email -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>

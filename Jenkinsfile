@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME'  // Ensure these match your Jenkins global tool config
-        jdk 'JAVA_HOME'
+        maven 'MAVEN_HOME'   // Ensure this exists in Jenkins tool config
+        jdk 'JAVA_HOME'      // Java 17, assumed set in Jenkins Global Tools
     }
 
     environment {
@@ -32,14 +32,11 @@ pipeline {
 
         stage('Send Email') {
             steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'smtp-creds',
-                        usernameVariable: 'SMTP_USER',
-                        passwordVariable: 'SMTP_PASS'
-                    )
-                ]) {
-                    bat "java -Demail.username=%SMTP_USER% -Demail.password=%SMTP_PASS% -cp target\\classes;target\\dependency\\* %EMAIL_CLASS%"
+                withCredentials([usernamePassword(credentialsId: 'smtp-creds', usernameVariable: 'SMTP_USER', passwordVariable: 'SMTP_PASS')]) {
+                    bat """
+                        echo Sending Email Report...
+                        java -Demail.username="%SMTP_USER%" -Demail.password="%SMTP_PASS%" -cp "target\\classes;target\\dependency\\*" %EMAIL_CLASS%
+                    """
                 }
             }
         }
@@ -47,7 +44,7 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline completed.'
+            echo '✅ Pipeline completed.'
         }
 
         failure {

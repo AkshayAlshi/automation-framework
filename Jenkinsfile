@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME'      // Make sure this is configured in Jenkins > Global Tool Configuration
-        jdk 'JAVA_HOME'         // Same here
+        maven 'MAVEN_HOME'  // Make sure this name matches Global Tool Configuration in Jenkins
+        jdk 'JAVA_HOME'     // Same here
     }
 
     environment {
-        REPORT_DIR = "reports"
+        REPORT_DIR = "target/surefire-reports"
         EMAIL_CLASS = "utils.EmailSender"
     }
 
@@ -20,13 +20,13 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                bat 'mvn clean test'
+                bat 'mvn clean test dependency:copy-dependencies'
             }
         }
 
         stage('Archive Reports') {
             steps {
-                archiveArtifacts artifacts: "${REPORT_DIR}/*.html", allowEmptyArchive: true
+                archiveArtifacts artifacts: "${REPORT_DIR}/*.*", allowEmptyArchive: true
             }
         }
 
@@ -43,12 +43,14 @@ pipeline {
         always {
             echo 'Pipeline completed.'
         }
+
         failure {
             mail bcc: '',
-                 body: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nCheck console output at ${env.BUILD_URL}",
+                 body: """❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}
+                          Check console output at ${env.BUILD_URL}""",
                  from: 'akshayalshi@gmail.com',
                  replyTo: 'akshayalshi@gmail.com',
-                 subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  to: 'alshiakshay55@gmail.com'
         }
     }

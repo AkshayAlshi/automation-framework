@@ -37,7 +37,7 @@ public class EmailSender {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse("alshiakshay55@gmail.com"));
+                    InternetAddress.parse("vgawande@microproindia.com"));
             message.setSubject("📋 Automation Test Report");
 
             String testSummary = getTestSummary();

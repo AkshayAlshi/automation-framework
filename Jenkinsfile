@@ -66,7 +66,7 @@ pipeline {
                  from: 'akshayalshi10@gmail.com',
                  replyTo: 'akshayalshi10@gmail.com',
                  subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 to: 'alshiakshay55@gmail.com'
+                 to: 'vgawande@microproindia.com'
         }
     }
 }

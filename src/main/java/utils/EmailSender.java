@@ -32,7 +32,7 @@ public class EmailSender {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse("qa@example.com")); // 📩 Update as needed
+                    InternetAddress.parse("alshiakshay55@gmail.com")); // 📩 Update as needed
             message.setSubject("📋 Automation Test Report");
 
             // 📊 Get test summary

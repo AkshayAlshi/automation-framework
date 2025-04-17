@@ -2,13 +2,14 @@ pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME'   // Ensure this exists in Jenkins > Global Tool Config
-        jdk 'JAVA_HOME'      // Java 17 assumed
+        maven 'MAVEN_HOME'
+        jdk 'JAVA_HOME'
     }
 
     environment {
         REPORT_DIR = "target/surefire-reports"
         EXTENT_REPORT_DIR = "target/reports"
+        EXTENT_REPORT_FILE = "target/reports/ExtentReport.html"
         EXTENT_ZIP = "target/ExtentReport.zip"
         EMAIL_CLASS = "utils.EmailSender"
     }
@@ -28,16 +29,17 @@ pipeline {
 
         stage('Archive Reports') {
             steps {
-                archiveArtifacts artifacts: "${REPORT_DIR}/*.*", allowEmptyArchive: true
-                archiveArtifacts artifacts: "${EXTENT_REPORT_DIR}/**", allowEmptyArchive: true
+                archiveArtifacts artifacts: "${REPORT_DIR}/**", allowEmptyArchive: true
+                archiveArtifacts artifacts: "${EXTENT_REPORT_FILE}", allowEmptyArchive: true
             }
         }
 
         stage('Zip Extent Report') {
             steps {
                 bat """
-                    powershell Compress-Archive -Path "${EXTENT_REPORT_DIR}\\*" -DestinationPath "${EXTENT_ZIP}" -Force
+                    powershell -Command "Compress-Archive -Path '${EXTENT_REPORT_DIR}\\*' -DestinationPath '${EXTENT_ZIP}' -Force"
                 """
+                archiveArtifacts artifacts: "${EXTENT_ZIP}", allowEmptyArchive: true
             }
         }
 
@@ -45,7 +47,6 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'smtp-creds', usernameVariable: 'SMTP_USER', passwordVariable: 'SMTP_PASS')]) {
                     bat """
-                        echo Sending Email Report...
                         java -Demail.username="%SMTP_USER%" -Demail.password="%SMTP_PASS%" -cp "target\\classes;target\\dependency\\*" ${EMAIL_CLASS}
                     """
                 }

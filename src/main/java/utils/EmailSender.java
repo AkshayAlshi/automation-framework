@@ -2,11 +2,13 @@ package utils;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
-import java.io.*;
-import java.nio.file.*;
+import org.w3c.dom.*;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class EmailSender {
 
@@ -19,73 +21,82 @@ public class EmailSender {
             return;
         }
 
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
         try {
-            // Zip the ExtentReports folder (target/reports)
-            String reportDirPath = "target/reports";
-            String zipFilePath = "target/ExtentReport.zip";
-            zipDirectory(reportDirPath, zipFilePath);
-
-            // Prepare email properties
-            Properties props = new Properties();
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.host", "smtp.gmail.com");
-            props.put("mail.smtp.port", "587");
-
-            Session session = Session.getInstance(props, new Authenticator() {
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(username, password);
-                }
-            });
-
-            // Compose email
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("alshiakshay55@gmail.com"));
-            message.setSubject("📋 Automation Test Report (Extent)");
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse("alshiakshay55@gmail.com"));
+            message.setSubject("📋 Automation Test Report");
 
-            String htmlBody = "<h3>📊 Automation Test Summary</h3>" +
-                    "<p>Please find the attached ExtentReport.zip for detailed test results.</p>";
+            String testSummary = getTestSummary();
+            String buildUrl = System.getenv("BUILD_URL");
+            String reportLink = (buildUrl != null)
+                    ? buildUrl + "artifact/target/reports/ExtentReport.html"
+                    : "Report path not available.";
 
-            // Email body
-            MimeBodyPart bodyPart = new MimeBodyPart();
-            bodyPart.setContent(htmlBody, "text/html");
+            String htmlBody = testSummary +
+                    "<p>📎 Full ExtentReport available <a href='" + reportLink + "'>here</a>.</p>";
 
-            // Attachment
-            MimeBodyPart attachment = new MimeBodyPart();
-            attachment.attachFile(zipFilePath);
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setContent(htmlBody, "text/html");
 
             Multipart multipart = new MimeMultipart();
-            multipart.addBodyPart(bodyPart);
-            multipart.addBodyPart(attachment);
+            multipart.addBodyPart(messageBodyPart);
+
+            // Attach zipped Extent report
+            File reportZip = new File("target/ExtentReport.zip");
+            if (reportZip.exists()) {
+                MimeBodyPart attachmentPart = new MimeBodyPart();
+                attachmentPart.attachFile(reportZip);
+                multipart.addBodyPart(attachmentPart);
+            } else {
+                System.out.println("⚠️ Zipped report not found. Skipping attachment.");
+            }
 
             message.setContent(multipart);
-
             Transport.send(message);
-            System.out.println("📧 Email sent with ExtentReport.zip attached!");
+            System.out.println("📧 Email with report sent successfully!");
 
-        } catch (Exception e) {
+        } catch (MessagingException | IOException e) {
+            System.err.println("❌ Email sending failed:");
             e.printStackTrace();
-            System.err.println("❌ Failed to send email.");
         }
     }
 
-    // Utility to zip a directory
-    private static void zipDirectory(String sourceDirPath, String zipFilePath) throws IOException {
-        Path zipPath = Paths.get(zipFilePath);
-        try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(zipPath))) {
-            Path sourcePath = Paths.get(sourceDirPath);
-            Files.walk(sourcePath).filter(path -> !Files.isDirectory(path)).forEach(path -> {
-                ZipEntry zipEntry = new ZipEntry(sourcePath.relativize(path).toString());
-                try {
-                    zs.putNextEntry(zipEntry);
-                    Files.copy(path, zs);
-                    zs.closeEntry();
-                } catch (IOException e) {
-                    System.err.println("❌ Error zipping file: " + path);
-                    e.printStackTrace();
-                }
-            });
+    private static String getTestSummary() {
+        try {
+            File file = new File("target/surefire-reports/testng-results.xml");
+            if (!file.exists()) {
+                return "<p>⚠️ testng-results.xml not found.</p>";
+            }
+
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.parse(file);
+            Element root = doc.getDocumentElement();
+
+            String passed = root.getAttribute("passed");
+            String failed = root.getAttribute("failed");
+            String skipped = root.getAttribute("skipped");
+
+            return "<h3>📊 Test Execution Summary</h3>" +
+                    "✔ Passed: " + passed + "<br>" +
+                    "❌ Failed: " + failed + "<br>" +
+                    "🚫 Skipped: " + skipped + "<br><br>";
+
+        } catch (Exception e) {
+            return "<p>⚠️ Unable to parse test results.</p>";
         }
     }
 }

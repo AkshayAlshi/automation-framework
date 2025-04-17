@@ -6,13 +6,10 @@ import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 
 public class ExtentManager {
     private static ExtentReports extent;
-    
-    // Thread-safe: handles parallel test execution
     private static final ThreadLocal<ExtentTest> test = new ThreadLocal<>();
 
     public static void initReport() {
-        // Output report in target directory (Jenkins can archive this easily)
-        ExtentSparkReporter reporter = new ExtentSparkReporter("target/ExtentReport.html");
+        ExtentSparkReporter reporter = new ExtentSparkReporter("target/reports/ExtentReport.html");
         reporter.config().setDocumentTitle("Automation Execution Report");
         reporter.config().setReportName("Hybrid UI/API Test Report");
 

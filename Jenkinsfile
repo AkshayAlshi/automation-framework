@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/AkshayAlshi/automation-framework.git' // ✅ Updated
+                git branch: 'main', url: 'https://github.com/AkshayAlshi/automation-framework.git'
             }
         }
 

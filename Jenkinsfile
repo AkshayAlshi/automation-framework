@@ -2,12 +2,13 @@ pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME'   // Ensure this exists in Jenkins tool config
-        jdk 'JAVA_HOME'      // Java 17, assumed set in Jenkins Global Tools
+        maven 'MAVEN_HOME'   // Make sure this is configured in Jenkins > Global Tool Config
+        jdk 'JAVA_HOME'      // Java 17 assumed, must be set in Jenkins
     }
 
     environment {
         REPORT_DIR = "target/surefire-reports"
+        EXTENT_REPORT = "target/ExtentReport.html"
         EMAIL_CLASS = "utils.EmailSender"
     }
 
@@ -27,6 +28,7 @@ pipeline {
         stage('Archive Reports') {
             steps {
                 archiveArtifacts artifacts: "${REPORT_DIR}/*.*", allowEmptyArchive: true
+                archiveArtifacts artifacts: "${EXTENT_REPORT}", allowEmptyArchive: true
             }
         }
 
@@ -35,7 +37,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'smtp-creds', usernameVariable: 'SMTP_USER', passwordVariable: 'SMTP_PASS')]) {
                     bat """
                         echo Sending Email Report...
-                        java -Demail.username="%SMTP_USER%" -Demail.password="%SMTP_PASS%" -cp "target\\classes;target\\dependency\\*" %EMAIL_CLASS%
+                        java -Demail.username="%SMTP_USER%" -Demail.password="%SMTP_PASS%" -cp "target\\classes;target\\dependency\\*" ${EMAIL_CLASS}
                     """
                 }
             }
@@ -51,8 +53,8 @@ pipeline {
             mail bcc: '',
                  body: """❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}
                           Check console output at ${env.BUILD_URL}""",
-                 from: 'akshayalshi@gmail.com',
-                 replyTo: 'akshayalshi@gmail.com',
+                 from: 'akshayalshi10@gmail.com',
+                 replyTo: 'akshayalshi10@gmail.com',
                  subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  to: 'alshiakshay55@gmail.com'
         }

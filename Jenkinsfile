@@ -10,6 +10,7 @@ pipeline {
         githubPush()
     }
 
+    
     environment {
         REPORT_DIR = "target/surefire-reports"
         EXTENT_REPORT_DIR = "target/reports"

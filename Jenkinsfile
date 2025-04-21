@@ -5,6 +5,10 @@ pipeline {
         maven 'MAVEN_HOME'
         jdk 'JAVA_HOME'
     }
+    
+     triggers {
+        githubPush()
+    }
 
     environment {
         REPORT_DIR = "target/surefire-reports"
@@ -66,7 +70,7 @@ pipeline {
                  from: 'akshayalshi10@gmail.com',
                  replyTo: 'akshayalshi10@gmail.com',
                  subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 to: 'dnyaneshwarhage111@gmail.com'
+                 to: 'vgawande@microproindia.com'
         }
     }
 }

@@ -35,6 +35,12 @@
             <artifactId>extentreports</artifactId>
             <version>5.1.0</version>
         </dependency>
+        
+        <dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20210307</version>
+		</dependency>
 
         <!-- ✅ Apache POI for Excel support -->
         <dependency>

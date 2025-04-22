@@ -1,4 +1,4 @@
-package tests;
+package UI_tests;
 
 import base.BaseTest;
 import config.Config;

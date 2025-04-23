@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-public class EmailSender {
+public class EmailSender  {
 
     public static void main(String[] args) {
         final String username = System.getProperty("email.username");

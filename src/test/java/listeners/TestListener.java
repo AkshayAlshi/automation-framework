@@ -39,6 +39,6 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onFinish(ITestContext context) {
-        ExtentManager.flushReport();
+        ExtentManager.flushReports();
     }
 }

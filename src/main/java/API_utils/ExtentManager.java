@@ -5,28 +5,33 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 
 public class ExtentManager {
+
     private static ExtentReports extent;
-    private static final ThreadLocal<ExtentTest> test = new ThreadLocal<>();
+    private static ThreadLocal<ExtentTest> test = new ThreadLocal<>();
 
-    public static void initReport() {
-        ExtentSparkReporter reporter = new ExtentSparkReporter("target/reports/ExtentReport.html");
-        reporter.config().setDocumentTitle("Automation Execution Report");
-        reporter.config().setReportName("Hybrid UI/API Test Report");
-
-        extent = new ExtentReports();
-        extent.attachReporter(reporter);
+    public static synchronized void initReport() {
+        if (extent == null) {
+            System.out.println("[ExtentManager] Initializing ExtentReports...");
+            ExtentSparkReporter spark = new ExtentSparkReporter("test-output/ExtentReport.html");
+            extent = new ExtentReports();
+            extent.attachReporter(spark);
+            extent.setSystemInfo("Environment", "QA");
+            extent.setSystemInfo("Tester", "Your Name");
+        }
     }
 
-    public static void createTest(String testName) {
-        ExtentTest extentTest = extent.createTest(testName);
-        test.set(extentTest);
+    public static synchronized void createTest(String testName) {
+        if (extent == null) {
+            throw new IllegalStateException("ExtentReports is not initialized! Did you forget @BeforeSuite?");
+        }
+        test.set(extent.createTest(testName));
     }
 
     public static ExtentTest getTest() {
         return test.get();
     }
 
-    public static void flushReport() {
+    public static void flushReports() {
         if (extent != null) {
             extent.flush();
         }

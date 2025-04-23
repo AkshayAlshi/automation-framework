@@ -18,12 +18,14 @@ public class BaseTest {
     protected WebDriver driver;
 
     @BeforeSuite
-    public void initReport() {
-        ExtentManager.initReport();
+    public void beforeSuite() {
+        System.out.println(">> Extent Report Initialization Started <<");
+        ExtentManager.initReport(); // 🔧 This ensures the report is created once per suite
     }
+    
 
     @BeforeMethod
-    public void setup(Method method) {
+    public void setup(java.lang.reflect.Method method) {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
@@ -49,9 +51,12 @@ public class BaseTest {
 
         driver.quit();
     }
+    
+    
 
     @AfterSuite
-    public void flushReport() {
-        ExtentManager.flushReport();
+    public void afterSuite() {
+        System.out.println(">> Flushing Extent Report <<");
+        ExtentManager.flushReports();
     }
 }

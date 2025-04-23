@@ -6,9 +6,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import pages.LoginPage;
-import utils.ExtentManager;
+
 import com.aventstack.extentreports.ExtentTest;
+
+import pages.LoginPage;
+//import utils.ExtentManager;
+import utils.ExtentManager;
+
 
 public class LoginTest extends BaseTest {
 

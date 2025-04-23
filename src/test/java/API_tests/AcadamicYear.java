@@ -1,43 +1,39 @@
 package API_tests;
 
-
-
-import java.io.IOException;
-
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
+import API_utils.ExcelUtil;
+import API_utils.ExtentBase;
+import API_utils.GlobalData;
+import API_utils.PropertyManager;
+import com.aventstack.extentreports.Status;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-
+import org.testng.Assert;
+import org.testng.annotations.Test;
 import utils.ExtentManager;
 
-import com.aventstack.extentreports.Status;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
-import API_utils.ExcelUtil;
-import API_utils.GlobalData;
-import API_utils.PropertyManager;
-
-public class AcadamicYear {
+public class AcadamicYear extends ExtentBase {
 
     @Test
     public void testCreateAcademicYear() throws IOException {
-
-        ExtentManager.createTest("testCreateAcademicYear");
         var test = ExtentManager.getTest();
         test.log(Status.INFO, "Starting Academic Year creation test");
 
         try {
             GlobalData.AccessToken();
             GlobalData.tokenValidate();
-            test.log(Status.INFO, "Access token validated successfully");
+            test.log(Status.INFO, "Access token retrieved and validated successfully");
 
             String baseURI = "http://mpsapi1.microproindia.com:8080/CourseConfigService-1.0/course/ctrl/save_aca_year_mst";
             String filePath = "C:\\Users\\HP\\Downloads\\CourseConfigModule.xlsx";
-            ExcelUtil excelUtils = new ExcelUtil(filePath);
-            String  sheetName = "Academic year";
+            String sheetName = "Academic year";
 
+            ExcelUtil excelUtils = new ExcelUtil(filePath);
             int rowCount = excelUtils.getRowCount(sheetName);
 
             for (int i = 1; i < 2; i++) {
@@ -70,14 +66,35 @@ public class AcadamicYear {
                         .body(payload)
                         .post(baseURI);
 
-                int actualStatusCode = res.getStatusCode();
+                int statusCode = res.getStatusCode();
                 String responseBody = res.getBody().asPrettyString();
 
-                test.log(Status.INFO, "API Response Code: " + actualStatusCode);
-                test.log(Status.INFO, "API Response Body: <pre>" + responseBody + "</pre>");
+                // ✅ Console logs
+                System.out.println("Response Status Code: " + statusCode);
+                System.out.println("Response Body:\n" + responseBody);
 
-                Assert.assertEquals(actualStatusCode, 200, "Expected status code 200");
-                test.pass("Received expected status code: 200");
+                // ✅ Extent logs
+                test.log(Status.INFO, "Request Payload: <pre>" + payload + "</pre>");
+                test.log(Status.INFO, "Response Status Code: " + statusCode);
+                test.log(Status.INFO, "Response Body: <pre>" + responseBody + "</pre>");
+
+                // ✅ Save response to file and link it
+                try {
+                    String folder = "test-output/api-responses";
+                    Files.createDirectories(Paths.get(folder));
+                    String filePathResponse = folder + "/response_" + System.currentTimeMillis() + ".json";
+                    Files.write(Paths.get(filePathResponse), responseBody.getBytes());
+                    test.log(Status.INFO, "📎 <a href='" + filePathResponse + "' target='_blank'>Download Response JSON</a>");
+                } catch (Exception e) {
+                    test.warning("Could not attach response file: " + e.getMessage());
+                }
+
+                if (statusCode != 200) {
+                    test.fail("Unexpected status code: " + statusCode);
+                    Assert.fail("API failed. Status code: " + statusCode + "\nResponse:\n" + responseBody);
+                }
+
+                test.pass("API returned expected status code 200");
 
                 String l_id2 = res.jsonPath().getString("l_id");
                 PropertyManager.setProperty("AcadamicyearId", l_id2);
@@ -86,9 +103,9 @@ public class AcadamicYear {
             }
 
         } catch (Exception e) {
-            test.fail("Test failed with exception: " + e.getMessage());
+            test.fail("❌ Exception occurred: " + e.getMessage());
+            test.fail("<pre>" + Arrays.toString(e.getStackTrace()) + "</pre>");
             throw e;
-
         } finally {
             test.log(Status.INFO, "Test execution completed.");
         }

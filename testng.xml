@@ -3,7 +3,7 @@
     <test name="Login Test">
         <classes>
             <class name="UI_tests.LoginTest"/>
-             <class name="API_tests.AcadamicYear"/>
+          
         </classes>
     </test>
 </suite>

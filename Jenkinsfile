@@ -4,7 +4,7 @@ pipeline {
     tools {
         maven 'MAVEN_HOME'
         jdk 'JAVA_HOME'
-    }
+    },
     
      triggers {
         githubPush()
@@ -63,6 +63,7 @@ pipeline {
         always {
             echo '✅ Pipeline completed.'
         }
+
 
         failure {
             mail bcc: '',
